@@ -13,9 +13,9 @@ class EmployeesModel(db.Model):
     __tablename__ = 'employees'
 
     employeeId = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String())
-    username = db.Column(db.String())
-    password = db.Column(db.String())
+    name = db.Column(db.String(255))
+    username = db.Column(db.String(255))
+    password = db.Column(db.String(255))
 
     def __init__(self, name, username, password):
         self.name = name
@@ -25,10 +25,33 @@ class EmployeesModel(db.Model):
     def __repr__(self):
         return f"<Employee {self.name}>"
 
+class CalendarModel(db.Model):
+    __tablename__ = 'calendar'
 
-@app.route('/')
-def hello():
-	return {"hello": "world"}
+    calendarId = db.Column(db.Integer, primary_key=True)
+    specialDay = db.Column(db.Date)
+
+    def __init__(self, specialDay):
+        self.specialDay = specialDay
+
+    def __repr__(self):
+        return f"<Calendar {self.specialDay}>"
+
+
+class CheckinModel(db.Model):
+    __tablename__ = 'checkin'
+
+    employeeId = db.Column(db.Integer, primary_key=True)
+    checkinDate = db.Column(db.Date, primary_key=True)
+    checkinTime = db.Column(db.DateTime)
+    checkoutTime = db.Column(db.DateTime)
+
+    def __init__(self, checkinTime, checkoutTime):
+        self.checkinTime = checkinTime
+        self.checkoutTime = checkoutTime
+
+    def __repr__(self):
+        return f"<Checkin {self.checkinTime}>"
 
 
 @app.route('/employees', methods=['POST', 'GET'])
