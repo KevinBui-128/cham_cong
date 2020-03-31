@@ -62,9 +62,9 @@ def handle_employees():
             new_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
             db.session.add(new_employee)
             db.session.commit()
-            return {"message": f"employee {new_employee.username} has been created successfully."}
+            return {"message": "add success","error":"null"}
         else:
-            return {"error": "The request payload is not in JSON format"}
+            return {"message": "add fail.","error": "The request payload is not in JSON format"}
 
     elif request.method == 'GET':
         employees = EmployeesModel.query.all()
@@ -75,7 +75,7 @@ def handle_employees():
                 "password": employee.password
             } for employee in employees]
 
-        return {"count": len(results), "employees": results, "message": "success"}
+        return {"count": len(results), "employees": results, "message": "success","error":"null"}
 
 
 @app.route('/employees/<employee_id>', methods=['GET', 'PUT', 'DELETE'])
