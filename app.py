@@ -53,6 +53,9 @@ class CheckinModel(db.Model):
     def __repr__(self):
         return f"<Checkin {self.checkinTime}>"
 
+@app.route('/')
+def hello():
+    return {"hello": "world"}
 
 @app.route('/employees', methods=['POST', 'GET'])
 def handle_employees():
@@ -110,3 +113,6 @@ def handle_employee(employee_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+    # if __name__ == '__main__':
+    #   app.run(host='0.0.0.0', port=80)
