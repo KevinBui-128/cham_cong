@@ -57,18 +57,53 @@ class CheckinModel(db.Model):
 def hello():
     return {"hello": "world"}
 
+@app.route('/login', methods=['POST'])
+def handle_login():
+    employees = EmployeesModel.query.all()
+    results = [
+        {
+            "name": employee.name,
+            "username": employee.username,
+            "password": employee.password
+        } for employee in employees]
+    if request.is_json:
+        data = request.get_json()
+        login_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        for a in results:
+            if login_employee.username == a['username']:
+                for b in results:
+                    if login_employee.password == b['password']:
+                        return {"message": "Login Success", "error": "null"}
+                    else:
+                        return {"message": "Wrong password", "error": "password"}
+            else:
+                return {"message": "Wrong username", "error": "username"}
+    else:
+        return {"message": "add fail","error": "The request payload is not in JSON format"}
+
 @app.route('/employees', methods=['POST', 'GET'])
 def handle_employees():
     if request.method == 'POST':
+        employees = EmployeesModel.query.all()
+        results = [
+            {
+                "name": employee.name,
+                "username": employee.username,
+                "password": employee.password
+            } for employee in employees]
         if request.is_json:
             data = request.get_json()
             new_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
-            db.session.add(new_employee)
-            db.session.commit()
-            return {"message": "add success","error":"null"}
+            print(new_employee.username)
+            for aa in results:
+                if new_employee.username != aa['username']:
+                    db.session.add(new_employee)
+                    db.session.commit()
+                    return {"message": "Add success", "error": "username"}
+                else:
+                    return {"message": "Username exists", "error": "username"}       
         else:
-            return {"message": "add fail.","error": "The request payload is not in JSON format"}
-
+            return {"message": "add fail","error": "The request payload is not in JSON format"}
     elif request.method == 'GET':
         employees = EmployeesModel.query.all()
         results = [
@@ -113,6 +148,3 @@ def handle_employee(employee_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-    # if __name__ == '__main__':
-    #   app.run(host='0.0.0.0', port=80)
