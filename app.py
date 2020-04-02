@@ -68,7 +68,7 @@ def handle_login():
         } for employee in employees]
     if request.is_json:
         data = request.get_json()
-        login_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        login_employee = EmployeesModel(username=data['username'], password=data['password'])
         for a in results:
             if login_employee.username == a['username']:
                 for b in results:
