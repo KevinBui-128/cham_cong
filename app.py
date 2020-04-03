@@ -70,6 +70,7 @@ def handle_login():
         data = request.get_json()
         login_employee = EmployeesModel(name=data['name'],username=data['username'], password=data['password'])
         for a in results:
+            print(a['username'],a['password'])
             if login_employee.username == a['username']:
                 for b in results:
                     if login_employee.password == b['password']:
@@ -94,14 +95,17 @@ def handle_employees():
         if request.is_json:
             data = request.get_json()
             new_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
-            print(new_employee.username)
-            for aa in results:
-                if new_employee.username != aa['username']:
-                    db.session.add(new_employee)
-                    db.session.commit()
-                    return {"message": "Add success", "error": "username"}
-                else:
-                    return {"message": "Username exists", "error": "username"}       
+            db.session.add(new_employee)
+            db.session.commit()
+            return {"message": "Add success", "error": "username"}
+            # print(new_employee.username)
+            # for aa in results:
+            #     if new_employee.username != aa['username']:
+            #         db.session.add(new_employee)
+            #         db.session.commit()
+            #         return {"message": "Add success", "error": "username"}
+            #     else:
+            #         return {"message": "Username exists", "error": "username"}       
         else:
             return {"message": "add fail","error": "The request payload is not in JSON format"}
     elif request.method == 'GET':
