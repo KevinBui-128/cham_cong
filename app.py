@@ -75,10 +75,10 @@ def handle_login():
                 for b in results:
                     if login_employee.password == b['password']:
                         return {"message": "Login Success", "error": "null"}
-                    else:
-                        return {"message": "Wrong password", "error": "password"}
-            else:
-                return {"message": "Wrong username", "error": "username"}
+                else:
+                    return {"message": "Wrong password", "error": "password"}
+        else:
+            return {"message": "Wrong username", "error": "username"}
     else:
         return {"message": "add fail","error": "The request payload is not in JSON format"}
 
