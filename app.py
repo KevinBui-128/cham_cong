@@ -82,73 +82,94 @@ def handle_login():
     else:
         return {"message": "add fail","error": "The request payload is not in JSON format"}
 
-@app.route('/employees', methods=['POST', 'GET'])
+@app.route('/employees', methods=['GET'])
 def handle_employees():
-    if request.method == 'POST':
-        employees = EmployeesModel.query.all()
-        results = [
-            {
-                "name": employee.name,
-                "username": employee.username,
-                "password": employee.password
-            } for employee in employees]
-        if request.is_json:
-            data = request.get_json()
-            new_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
-            db.session.add(new_employee)
-            db.session.commit()
-            return {"message": "Add success", "error": "username"}
-            # print(new_employee.username)
-            # for aa in results:
-            #     if new_employee.username != aa['username']:
-            #         db.session.add(new_employee)
-            #         db.session.commit()
-            #         return {"message": "Add success", "error": "username"}
-            #     else:
-            #         return {"message": "Username exists", "error": "username"}       
-        else:
-            return {"message": "add fail","error": "The request payload is not in JSON format"}
-    elif request.method == 'GET':
-        employees = EmployeesModel.query.all()
-        results = [
-            {
-                "name": employee.name,
-                "username": employee.username,
-                "password": employee.password
-            } for employee in employees]
-
-        return {"count": len(results), "employees": results, "message": "success","error":"null"}
-
-
-@app.route('/employees/<employee_id>', methods=['GET', 'PUT', 'DELETE'])
-def handle_employee(employee_id):
-    employee = EmployeesModel.query.get_or_404(employee_id)
-
-    if request.method == 'GET':
-        response = {
+    employees = EmployeesModel.query.all()
+    results = [
+        {
             "name": employee.name,
             "username": employee.username,
             "password": employee.password
-        }
-        return {"message": "success", "employee": response}
+        } for employee in employees]
 
-    elif request.method == 'PUT':
+    return {"count": len(results), "employees": results, "message": "success", "error": "null"}
+    
+@app.route('/employees/add', methods=['POST'])
+def handle_employees_add():
+    employees = EmployeesModel.query.all()
+    results = [
+        {
+            "name": employee.name,
+            "username": employee.username,
+            "password": employee.password
+        } for employee in employees]
+    if request.is_json:
         data = request.get_json()
-        employee.name = data['name']
-        employee.username = data['username']
-        employee.password = data['password']
-
-        db.session.add(employee)
-        db.session.commit()
+        new_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+    
+        for a in results:
+            if new_employee.username != a['username']:
+                print(new_employee.username,"  +  ",a['username'])
+                continue
+            else:
+                return {"message": "Username exists", "error": "username"}
+        else:
+            db.session.add(new_employee)
+            db.session.commit()
+            return {"message": "Add success", "error": "username"}       
+    else:
+        return {"message": "add fail", "error": "The request payload is not in JSON format"}
         
-        return {"message": f"employee {employee.name} successfully updated"}
+@app.route('/employees/update', methods=['POST'])
+def handle_employees_update():
+    employees = EmployeesModel.query.all()
+    results = [
+        {
+            "name": employee.name,
+            "username": employee.username,
+            "password": employee.password
+        } for employee in employees]
+    if request.is_json:
+        data = request.get_json()
+        update_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        for a in results:
+            print(a['username'])
+            if update_employee.username == a['username']:
 
-    elif request.method == 'DELETE':
-        db.session.delete(employee)
-        db.session.commit()
-        
-        return {"message": f"Employee {employee.name} successfully deleted."}
+                update = EmployeesModel.query.filter_by(username=update_employee.username).first()
+                update.name = update_employee.name
+                update.password = update_employee.password
+                db.session.commit()
+                
+                return {"message": "update success"}     
+        else:
+            return {"message": "Wrong username", "error": "username"}
+    else:
+        return {"message": "update fail", "error": "The request payload is not in JSON format"}
 
+@app.route('/employees/delete', methods=['POST'])
+def handle_employees_delete():
+    employees = EmployeesModel.query.all()
+    results = [
+        {
+            "name": employee.name,
+            "username": employee.username,
+            "password": employee.password
+        } for employee in employees]
+    if request.is_json:
+        data = request.get_json()
+        delete_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        for a in results:
+            print(a['username'], " assssssssssssss", a)
+            if delete_employee.username == a['username']:
+                EmployeesModel.query.filter_by(username=delete_employee.username).delete()
+                db.session.commit()
+            
+                return {"message": "delete success"}     
+        else:
+            return {"message": "Wrong username", "error": "username"}    
+    else:
+        return {"message": "delete fail", "error": "The request payload is not in JSON format"}
 
 if __name__ == '__main__':
     app.run(debug=True)
