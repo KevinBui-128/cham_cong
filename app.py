@@ -275,28 +275,20 @@ def handle_checkin():
             "checkinTime": checkin.checkinTime,
             "checkoutTime": checkin.checkoutTime
         } for checkin in checkins]
+    print(results[0]['username'])\
 
     if request.is_json:
         data = request.get_json()
         get_checkin = CheckinModel(username=data['username'], workTime=data['workTime'], checkinDate=data['checkinDate'], checkinTime=data['checkinTime'], checkoutTime=data['checkoutTime'],)
-        for a in results:
-            print(a['username'])
-            if get_checkin.username == a['username']:
+        
+        data2 = [a for a in results if a['username'] == get_checkin.username]
 
-                db.session.close()
+        db.session.close()
                 
-                return {"count": len(results), "checkins": results, "message": "success", "error": "null"}
+        return {"count": len(results), get_checkin.username: data2, "message": "success", "error": "null"}
                 
-                checkins.close()
-                db.close()
-        else:
-
-            db.session.close()
-
-            return {"message": "Wrong username", "error": "username"}
-
-            checkins.close()
-            db.close()
+        checkins.close()
+        db.close()
     else:
 
         db.session.close()
@@ -467,24 +459,16 @@ def handle_calendar():
     if request.is_json:
         data = request.get_json()
         get_calendar = CalendarModel(username=data['username'], specialDay=data['specialDay'], workDay=data['workDay'], dayOff=data['dayOff'])
-        for a in results:
-            print(a['username'])
-            if get_calendar.username == a['username']:
+        
+        data2 = [a for a in results if a['username'] == get_calendar.username]
 
-                db.session.close()
+        db.session.close()
                 
-                return {"count": len(results), "calendars": results, "message": "success", "error": "null"}
-                
-                calendars.close()
-                db.close()
-        else:
+        return {"count": len(results), get_calendar.username: data2, "message": "success", "error": "null"}
 
-            db.session.close()
+        calendars.close()
+        db.close()
 
-            return {"message": "Wrong username", "error": "username"}
-
-            calendars.close()
-            db.close()
     else:
 
         db.session.close()
