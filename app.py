@@ -82,19 +82,26 @@ def handle_login():
         for a in results:
             print(a['username'],a['password'])
             if login_employee.username == a['username']:
-                for b in results:
-                    if login_employee.password == b['password']:
-
-                        db.session.close()
-                        db.close()
-
-                        return {"message": "Login Success", "error": "null"}
+                if login_employee.password == a['password']:
+                    db.session.close()
+                    return {"message": "Login Success", "error": "null"}
+                    employees.close()
+                    db.close()
                 else:
+                    db.session.close()
                     return {"message": "Wrong password", "error": "password"}
+                    employees.close()
+                    db.close()
         else:
+            db.session.close()
             return {"message": "Wrong username", "error": "username"}
+            employees.close()
+            db.close()
     else:
-        return {"message": "add fail","error": "The request payload is not in JSON format"}
+        db.session.close()
+        return {"message": "add fail", "error": "The request payload is not in JSON format"}
+        employees.close()
+        db.close()
 
 @app.route('/employees', methods=['POST'])
 def handle_employees():
