@@ -289,10 +289,10 @@ def handle_checkin():
         get_checkin = CheckinModel(username=data['username'], workTime=data['workTime'], checkinDate=data['checkinDate'], checkinTime=data['checkinTime'], checkoutTime=data['checkoutTime'],)
         
         data2 = [a for a in results if a['username'] == get_checkin.username]
-
+        
         db.session.close()
                 
-        return {"count": len(results), get_checkin.username: data2, "message": "success", "error": "null"}
+        return {"count": len(results), "data": data2, "message": "success", "error": "null"}
                 
         checkins.close()
         db.close()
@@ -471,7 +471,7 @@ def handle_calendar():
 
         db.session.close()
                 
-        return {"count": len(results), get_calendar.username: data2, "message": "success", "error": "null"}
+        return {"count": len(results), "data": data2, "message": "success", "error": "null"}
 
         calendars.close()
         db.close()
