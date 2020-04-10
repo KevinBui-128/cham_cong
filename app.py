@@ -318,7 +318,7 @@ def handle_calendar():
 def handle_calendar_add():
     if request.is_json:
         data = request.get_json()
-        new_calendar = CalendarModel(username=data['username'], specialDay=data['specialDay'], workDay=data['workDay'], dayOff=data['dayOff'])
+        new_calendar = CalendarModel(specialDay=data['specialDay'], workDay=data['workDay'], dayOff=data['dayOff'])
     
         try:
             db.session.add(new_calendar)
