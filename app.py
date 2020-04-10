@@ -242,15 +242,7 @@ def handle_employees_delete():
         for a in results:
             print(a['username'], " assssssssssssss", a)
             if delete_employee.username == a['username']:
-                EmployeesModel.query.filter_by(username=delete_employee.username).delete()
-                db.session.commit()
                 
-                db.session.close()
-
-                return {"message": "delete success"}
-
-                employees.close()
-                db.close()     
         else:
             db.session.close()
 
