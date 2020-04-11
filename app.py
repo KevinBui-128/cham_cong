@@ -15,11 +15,15 @@ class EmployeesModel(db.Model):
     name = db.Column(db.String(255))
     username = db.Column(db.String(255))
     password = db.Column(db.String(255))
+    address = db.Column(db.String(255))
+    phone = db.Column(db.Integer)
 
-    def __init__(self, name, username, password):
+    def __init__(self, name, username, password, address, phone):
         self.name = name
         self.username = username
         self.password = password
+        self.address = address
+        self.phone = phone
 
     def __repr__(self):
         return f"<Employee {self.name}>"
@@ -72,11 +76,13 @@ def handle_login():
         {
             "name": employee.name,
             "username": employee.username,
-            "password": employee.password
+            "password": employee.password,
+            "address": employee.address,
+            "phone": employee.phone
         } for employee in employees]
     if request.is_json:
         data = request.get_json()
-        login_employee = EmployeesModel(name=data['name'],username=data['username'], password=data['password'])
+        login_employee = EmployeesModel(name=data['name'],username=data['username'], password=data['password'], address=data['address'], phone=data['phone'])
         for a in results:
             print(a['username'],a['password'])
             if login_employee.username == a['username']:
@@ -108,7 +114,9 @@ def handle_employees():
         {
             "name": employee.name,
             "username": employee.username,
-            "password": employee.password
+            "password": employee.password,
+            "address": employee.address,
+            "phone": employee.phone
         } for employee in employees]
 
     db.session.close()
@@ -120,7 +128,7 @@ def handle_employees():
 def handle_employees_add():
     if request.is_json:
         data = request.get_json()
-        new_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        new_employee = EmployeesModel(name=data['name'],username=data['username'], password=data['password'], address=data['address'], phone=data['phone'])
     
         try: 
             db.session.add(new_employee)
@@ -146,12 +154,14 @@ def handle_employees_add():
 def handle_employees_update():
     if request.is_json:
         data = request.get_json()
-        update_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        update_employee = EmployeesModel(name=data['name'],username=data['username'], password=data['password'], address=data['address'], phone=data['phone'])
         
         try:
             update = EmployeesModel.query.filter_by(username=update_employee.username).first()
             update.name = update_employee.name
             update.password = update_employee.password
+            update.address = update_employee.address
+            update.phone = update_employee.phone
             db.session.commit()
 
             db.session.close()
@@ -171,7 +181,7 @@ def handle_employees_update():
 def handle_employees_delete():
     if request.is_json:
         data = request.get_json()
-        delete_employee = EmployeesModel(name=data['name'], username=data['username'], password=data['password'])
+        delete_employee = EmployeesModel(name=data['name'],username=data['username'], password=data['password'], address=data['address'], phone=data['phone'])
         
         try:
             EmployeesModel.query.filter_by(username=delete_employee.username).delete()
@@ -254,7 +264,6 @@ def handle_checkin_update():
         try:
             update = CheckinModel.query.filter_by(username=update_checkin.username, checkinDate=update_checkin.checkinDate).first()
             update.workTime = update_checkin.workTime
-            update.checkinDate = update_checkin.checkinDate
             update.checkinTime = update_checkin.checkinTime
             update.checkoutTime = update_checkin.checkoutTime
                         
@@ -337,54 +346,30 @@ def handle_calendar_add():
         calendars.close()
         db.close()
         
-# @app.route('/calendar/update', methods=['POST'])
-# def handle_calendar_update():
-#     calendars = CalendarModel.query.all()
-#     results = [
-#         {
-#             "username": calendar.username,
-#             "specialDay": calendar.specialDay,
-#             "workDay": calendar.workDay,
-#             "dayOff": calendar.dayOff
-#         } for calendar in calendars]
-#     if request.is_json:
-#         data = request.get_json()
-#         update_calendar = CalendarModel(username=data['username'], specialDay=data['specialDay'], workDay=data['workDay'], dayOff=data['dayOff'])
-#         for a in results:
-#             print(a['username'])
-#             if update_calendar.username == a['username']:
-#                 if update_calendar.dayOff == a['dayOff']:
-#                     update = CalendarModel.query.filter_by(username=update_calendar.username, dayOff=update_calendar.dayOff).first()
-#                     update.specialDay = update_calendar.specialDay
-#                     update.workDay = update_calendar.workDay
-#                     update.dayOff = update_calendar.dayOff
+@app.route('/calendar/update', methods=['POST'])
+def handle_calendar_update():
+    if request.is_json:
+        data = request.get_json()
+        update_calendar = CalendarModel(specialDay=data['specialDay'], workDay=data['workDay'], dayOff=data['dayOff'])
+        try:
+            update = CalendarModel.query.filter_by(specialDay=update_calendar.specialDay, workDay=update_calendar.workDay, dayOff=update_calendar.dayOff).first()
+            update.specialDay = update_calendar.specialDay
+            update.workDay = update_calendar.workDay
+            update.dayOff = update_calendar.dayOff
                     
-#                     db.session.commit()
+            db.session.commit()
+        
+            return {"message": "update success"}
+        except:
+            return {"message": "update fail"}
+    else:
 
-#                     db.session.close()
-                    
-#                     return {"message": "update success"}
-                    
-#                     calendars.close()
-#                     db.close()
-#                 else:
-#                     continue
-#         else:
+        db.session.close()
 
-#             db.session.close()
+        return {"message": "update fail", "error": "The request payload is not in JSON format"}
 
-#             return {"message": "Wrong username", "error": "username"}
-
-#             calendars.close()
-#             db.close()
-#     else:
-
-#         db.session.close()
-
-#         return {"message": "update fail", "error": "The request payload is not in JSON format"}
-
-#         calendars.close()
-#         db.close()
+        calendars.close()
+        db.close()
 
 @app.route('/calendar/delete', methods=['POST'])
 def handle_calendar_delete():
