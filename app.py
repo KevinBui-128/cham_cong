@@ -16,7 +16,7 @@ class EmployeesModel(db.Model):
     username = db.Column(db.String(255))
     password = db.Column(db.String(255))
     address = db.Column(db.String(255))
-    phone = db.Column(db.Integer)
+    phone = db.Column(db.BigInteger)
 
     def __init__(self, name, username, password, address, phone):
         self.name = name
