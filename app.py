@@ -185,6 +185,8 @@ def handle_employees_delete():
         
         try:
             EmployeesModel.query.filter_by(username=delete_employee.username).delete()
+            CheckinModel.query.filter_by(username=delete_employee.username).delete()
+
             db.session.commit()
                         
             db.session.close()
